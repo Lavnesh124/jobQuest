@@ -2,12 +2,11 @@ import express from "express";
 import cookieParser from "cookie-parser";
 import cors from "cors";
 import dotenv from "dotenv";
-import connectDB from './db.js';
-import userRoute from "./routes/userRoutes.js"
+import connectDB from "./db.js";
+import userRoute from "./routes/userRoutes.js";
 import companyRoute from "./routes/companyRoutes.js";
 import jobRoute from "./routes/jobRoutes.js";
 import applicationRoute from "./routes/applicationRoutes.js";
-
 
 dotenv.config();
 
@@ -17,9 +16,9 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 const corsOptions = {
-    origin: 'http://localhost:5171',
-    Credential: true
-}
+  origin: "http://localhost:5171",
+  Credential: true,
+};
 app.use(cors(corsOptions));
 
 const PORT = process.env.PORT || 3000;
@@ -32,6 +31,5 @@ app.use("/api/v1/application", applicationRoute);
 connectDB();
 
 app.listen(PORT, () => {
-
-    console.log("server runnibr");
-})
+  console.log("server running");
+});
