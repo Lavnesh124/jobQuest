@@ -53,7 +53,7 @@ const Navbar = () => {
           />
         </button>
         {isProfileOpen && (
-          <div className="absolute top-10 right-2 mt-2 w-40 bg-gray-100 text-black rounded-md shadow-2xl z-10 mx-auto">
+          <div className="absolute top-10 right-[-3.2rem] mt-2 w-40 bg-gray-100 text-black rounded-md shadow-2xl z-10 mx-auto">
             <NavLink
               to="/profile"
               className="flex items-center px-4 py-2 hover:bg-gray-200"
