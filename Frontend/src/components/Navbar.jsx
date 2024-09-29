@@ -6,7 +6,7 @@ const Navbar = () => {
   const [isProfileOpen, setIsProfileOpen] = useState(false);
 
   return (
-    <div className="w-full h-16 bg-[#00A263] text-white flex justify-between items-center px-4 md:px-8 lg:px-16 sticky top-0">
+    <div className="w-full h-16 bg-[#00A263] text-white z-50 flex justify-between items-center px-4 md:px-8 lg:px-16 sticky top-0">
       <div className="flex items-center font-semibold">
         <NavLink to={"/"}>
           <h2 className="text-lg">WorkBridge</h2>
