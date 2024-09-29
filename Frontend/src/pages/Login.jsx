@@ -1,15 +1,38 @@
 import React, { useState } from "react";
-import { Link } from "react-router-dom"; // Import Link for navigation
+import { Link, useNavigate } from "react-router-dom"; // Import useNavigate
 
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [role, setRole] = useState("user"); // Default to "user"
+  const [error, setError] = useState("");
 
-  const handleLogin = (e) => {
+  const navigate = useNavigate(); // Initialize useNavigate hook
+
+  const handleLogin = async (e) => {
     e.preventDefault();
-    // Handle login logic here (e.g., API call)
-    console.log({ email, password, role });
+
+    const addUser = { email: email, password: password, role: role };
+    console.log(addUser);
+    const response = await fetch("http://localhost:8021/api/v1/user/login", {
+      method: "POST",
+      body: JSON.stringify(addUser),
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+    const result = await response.json();
+    if (!response.ok) {
+      setError(result.error);
+      console.log(result.error);
+    } else {
+      // Clear input fields and error message
+      setRole("student");
+      setError("");
+      setPassword("");
+      setEmail("");
+      navigate("/"); // Navigate to home after successful login
+    }
   };
 
   return (
@@ -57,37 +80,40 @@ const Login = () => {
           <label className="block text-sm font-semibold mb-2">Role</label>
           <div className="flex items-center justify-between">
             <span
-              className={`cursor-pointer ${
-                role === "admin" ? "font-bold" : "text-gray-600"
-              }`}
-              onClick={() => setRole("admin")}
+              className={`cursor-pointer ${role === "recruiter" ? "font-bold" : "text-gray-600"
+                }`}
+              onClick={() => setRole("recruiter")}
             >
-              Admin
+              Recruiter
             </span>
             <label className="relative inline-flex items-center cursor-pointer">
               <input
                 type="checkbox"
                 className="sr-only"
-                checked={role === "admin"}
-                onChange={() => setRole(role === "admin" ? "user" : "admin")}
+                checked={role === "recruiter"}
+                onChange={() => setRole(role === "recruiter" ? "student" : "recruiter")}
               />
               <div className="w-12 h-6 bg-[#00A263] rounded-full shadow-inner"></div>
               <div
-                className={`absolute w-6 h-6 bg-white rounded-full shadow transform transition-transform duration-300 ease-in-out ${
-                  role === "user" ? "translate-x-6" : "translate-x-0"
-                }`}
+                className={`absolute w-6 h-6 bg-white rounded-full shadow transform transition-transform duration-300 ease-in-out ${role === "user" ? "translate-x-6" : "translate-x-0"
+                  }`}
               ></div>
             </label>
             <span
-              className={`cursor-pointer ${
-                role === "user" ? "font-bold" : "text-gray-600"
-              }`}
-              onClick={() => setRole("user")}
+              className={`cursor-pointer ${role === "student" ? "font-bold" : "text-gray-600"
+                }`}
+              onClick={() => setRole("student")}
             >
-              User
+              Student
             </span>
           </div>
         </div>
+
+        {error && (
+          <div className="text-red-500 text-sm mb-4">
+            {error} {/* Display error message */}
+          </div>
+        )}
 
         <button
           type="submit"
