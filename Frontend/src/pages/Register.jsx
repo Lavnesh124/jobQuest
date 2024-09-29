@@ -1,17 +1,42 @@
 import React, { useState } from "react";
-import { Link } from "react-router-dom"; // Import Link for navigation
+import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 const Register = () => {
   const [fullname, setFullName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [phoneNumber, setPhoneNumber] = useState("");
-  const [role, setRole] = useState("user"); // Default to "user"
+  const [role, setRole] = useState("student"); // Default to "student"
+  const [error, setError] = useState("");
+  const navigate = useNavigate();
 
-  const handleRegister = (e) => {
+  const handleRegister = async (e) => {
     e.preventDefault();
-    // Handle registration logic here (e.g., API call)
-    console.log({ fullname, email, password, phoneNumber, role });
+    const addUser = { fullname, email, password, phoneNumber, role };
+
+    const response = await fetch("http://localhost:8021/api/v1/user/register", {
+      method: "POST",
+      body: JSON.stringify(addUser),
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+
+    const result = await response.json();
+    if (!response.ok) {
+      setError(result.error);
+      console.log(result.error);
+    } else {
+      // Clear input fields and error message
+      setRole("student"); // Reset to "student"
+      setError("");
+      setPassword("");
+      setEmail("");
+      setFullName("");
+      setPhoneNumber("");
+      navigate("/"); // Navigate to home after successful registration
+    }
   };
 
   return (
@@ -23,12 +48,7 @@ const Register = () => {
         <h2 className="text-2xl font-bold mb-6 text-center">Register</h2>
 
         <div className="mb-4">
-          <label
-            className="block text-sm font-semibold mb-2"
-            htmlFor="fullname"
-          >
-            Full Name
-          </label>
+          <label className="block text-sm font-semibold mb-2" htmlFor="fullname">Full Name</label>
           <input
             type="text"
             id="fullname"
@@ -41,9 +61,7 @@ const Register = () => {
         </div>
 
         <div className="mb-4">
-          <label className="block text-sm font-semibold mb-2" htmlFor="email">
-            Email
-          </label>
+          <label className="block text-sm font-semibold mb-2" htmlFor="email">Email</label>
           <input
             type="email"
             id="email"
@@ -56,12 +74,7 @@ const Register = () => {
         </div>
 
         <div className="mb-4">
-          <label
-            className="block text-sm font-semibold mb-2"
-            htmlFor="password"
-          >
-            Password
-          </label>
+          <label className="block text-sm font-semibold mb-2" htmlFor="password">Password</label>
           <input
             type="password"
             id="password"
@@ -74,18 +87,14 @@ const Register = () => {
         </div>
 
         <div className="mb-4">
-          <label
-            className="block text-sm font-semibold mb-2"
-            htmlFor="phoneNumber"
-          >
-            Phone Number
-          </label>
+          <label className="block text-sm font-semibold mb-2" htmlFor="phoneNumber">Phone Number</label>
           <input
             type="tel"
             id="phoneNumber"
             value={phoneNumber}
             onChange={(e) => setPhoneNumber(e.target.value)}
             required
+            pattern="[0-9]+" // Only allow numeric characters
             className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:border-[#00A263]"
             placeholder="Enter your phone number"
           />
@@ -95,34 +104,28 @@ const Register = () => {
           <label className="block text-sm font-semibold mb-2">Role</label>
           <div className="flex items-center justify-between">
             <span
-              className={`cursor-pointer ${
-                role === "admin" ? "font-bold" : "text-gray-600"
-              }`}
-              onClick={() => setRole("admin")}
+              className={`cursor-pointer ${role === "recruiter" ? "font-bold" : "text-gray-600"}`}
+              onClick={() => setRole("recruiter")}
             >
-              Admin
+              Recruiter
             </span>
             <label className="relative inline-flex items-center cursor-pointer">
               <input
                 type="checkbox"
                 className="sr-only"
-                checked={role === "admin"}
-                onChange={() => setRole(role === "admin" ? "user" : "admin")}
+                checked={role === "recruiter"}
+                onChange={() => setRole(role === "recruiter" ? "student" : "recruiter")}
               />
               <div className="w-12 h-6 bg-[#00A263] rounded-full shadow-inner"></div>
               <div
-                className={`absolute w-6 h-6 bg-white rounded-full shadow transform transition-transform duration-300 ease-in-out ${
-                  role === "user" ? "translate-x-6" : "translate-x-0"
-                }`}
+                className={`absolute w-6 h-6 bg-white rounded-full shadow transform transition-transform duration-300 ease-in-out ${role === "student" ? "translate-x-6" : "translate-x-0"}`}
               ></div>
             </label>
             <span
-              className={`cursor-pointer ${
-                role === "user" ? "font-bold" : "text-gray-600"
-              }`}
-              onClick={() => setRole("user")}
+              className={`cursor-pointer ${role === "student" ? "font-bold" : "text-gray-600"}`}
+              onClick={() => setRole("student")}
             >
-              User
+              Student
             </span>
           </div>
         </div>
