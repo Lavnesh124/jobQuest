@@ -4,7 +4,7 @@ import { Link, useNavigate } from "react-router-dom"; // Import useNavigate
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [role, setRole] = useState("user"); // Default to "user"
+  const [role, setRole] = useState("student"); // Default to "user"
   const [error, setError] = useState("");
 
   const navigate = useNavigate(); // Initialize useNavigate hook
@@ -80,8 +80,9 @@ const Login = () => {
           <label className="block text-sm font-semibold mb-2">Role</label>
           <div className="flex items-center justify-between">
             <span
-              className={`cursor-pointer ${role === "recruiter" ? "font-bold" : "text-gray-600"
-                }`}
+              className={`cursor-pointer ${
+                role === "recruiter" ? "font-bold" : "text-gray-600"
+              }`}
               onClick={() => setRole("recruiter")}
             >
               Recruiter
@@ -91,17 +92,21 @@ const Login = () => {
                 type="checkbox"
                 className="sr-only"
                 checked={role === "recruiter"}
-                onChange={() => setRole(role === "recruiter" ? "student" : "recruiter")}
+                onChange={() =>
+                  setRole(role === "recruiter" ? "student" : "recruiter")
+                }
               />
               <div className="w-12 h-6 bg-[#00A263] rounded-full shadow-inner"></div>
               <div
-                className={`absolute w-6 h-6 bg-white rounded-full shadow transform transition-transform duration-300 ease-in-out ${role === "user" ? "translate-x-6" : "translate-x-0"
-                  }`}
+                className={`absolute w-6 h-6 bg-white rounded-full shadow transform transition-transform duration-300 ease-in-out ${
+                  role === "student" ? "translate-x-6" : "translate-x-0"
+                }`}
               ></div>
             </label>
             <span
-              className={`cursor-pointer ${role === "student" ? "font-bold" : "text-gray-600"
-                }`}
+              className={`cursor-pointer ${
+                role === "student" ? "font-bold" : "text-gray-600"
+              }`}
               onClick={() => setRole("student")}
             >
               Student
