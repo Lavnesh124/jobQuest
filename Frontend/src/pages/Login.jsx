@@ -1,7 +1,11 @@
+import { useAuth } from "@/context/authContext";
 import React, { useState } from "react";
+import { Toaster } from "react-hot-toast";
+import toast from "react-hot-toast";
 import { Link, useNavigate } from "react-router-dom"; // Import useNavigate
 
 const Login = () => {
+  const { isAuthenticated, loading, setIsAuthenticated } = useAuth();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [role, setRole] = useState("student"); // Default to "user"
@@ -20,23 +24,29 @@ const Login = () => {
       headers: {
         "Content-Type": "application/json",
       },
+      credentials: "include",
     });
     const result = await response.json();
     if (!response.ok) {
       setError(result.error);
       console.log(result.error);
+      toast.error(result.message);
     } else {
       // Clear input fields and error message
+      console.log(result.message);
+      toast.success("Login Successful");
       setRole("student");
       setError("");
       setPassword("");
       setEmail("");
+      setIsAuthenticated(true);
       navigate("/"); // Navigate to home after successful login
     }
   };
-
+  console.log(isAuthenticated);
   return (
     <div className="flex items-center justify-center min-h-[calc(100vh-13rem)] bg-gray-100">
+      <Toaster position="top-center" reverseOrder={false} />
       <form
         onSubmit={handleLogin}
         className="bg-white shadow-md rounded-md px-8 py-6 w-full max-w-md"
