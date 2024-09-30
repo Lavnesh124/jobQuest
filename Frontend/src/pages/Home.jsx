@@ -1,9 +1,12 @@
 import React, { useRef, useEffect, useState } from "react";
+import toast from "react-hot-toast";
 
 const HomePage = () => {
   const sliderRef = useRef(null);
   const [isLeftDisabled, setIsLeftDisabled] = useState(true);
   const [isRightDisabled, setIsRightDisabled] = useState(false);
+  const [search, setSearch] = useState("");
+  const [jobs, setJobs] = useState([]);
 
   const jobPosts = [
     "FrontEnd Developer",
@@ -70,6 +73,34 @@ const HomePage = () => {
     };
   }, []);
 
+  const handleSearch = async (e) => {
+    try {
+      const response = await fetch(
+        `http://localhost:8021/api/v1/job/get?keyword=${search}`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          credentials: "include",
+        }
+      );
+      const result = await response.json();
+      console.log(result);
+      if (response.ok) {
+        setJobs(result.jobs); // Store jobs in state
+
+        // toast.success("Jobs loaded successfully");
+      } else {
+        toast.error(result.message || "Failed to fetch jobs");
+      }
+    } catch (error) {
+      toast.error("An error occurred while searching for jobs");
+      console.error("Error:", error);
+    }
+  };
+  console.log(jobs);
+
   return (
     <div>
       {/* Main Section */}
@@ -89,8 +120,13 @@ const HomePage = () => {
               type="text"
               className="w-full px-4 sm:px-6 py-3 sm:py-4 border border-gray-300 rounded-full focus:outline-none focus:border-[#00A263] text-base sm:text-lg shadow-md"
               placeholder="Search for jobs..."
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
             />
-            <button className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-[#00A263] text-white font-bold p-2 sm:p-3 rounded-full hover:bg-green-600 transition duration-200 shadow-lg">
+            <button
+              className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-[#00A263] text-white font-bold p-2 sm:p-3 rounded-full hover:bg-green-600 transition duration-200 shadow-lg"
+              onClick={handleSearch}
+            >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 fill="none"

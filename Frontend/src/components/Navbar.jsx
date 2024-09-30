@@ -1,9 +1,31 @@
+import { useAuth } from "@/context/authContext";
 import React, { useState } from "react";
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
+  const navigate = useNavigate();
+  const { isAuthenticated, loading, setIsAuthenticated } = useAuth();
+
+  const handleLogout = async (e) => {
+    try {
+      const response = await fetch("http://localhost:8021/api/v1/user/logout", {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        credentials: "include",
+      });
+      const result = await response.json();
+      console.log(result.message);
+      setIsAuthenticated(false);
+      navigate("/login");
+    } catch (error) {
+      console.error("Error during Logout", error);
+    }
+  };
+  // console.log(isAuthenticated);
 
   return (
     <div className="w-full h-16 bg-[#00A263] text-white z-50 flex justify-between items-center px-4 md:px-8 lg:px-16 sticky top-0">
@@ -68,7 +90,10 @@ const Navbar = () => {
               </svg>
               View Profile
             </NavLink>
-            <button className="flex items-center w-full text-left px-4 py-2 hover:bg-gray-200 hover:text-red-700">
+            <button
+              className="flex items-center w-full text-left px-4 py-2 hover:bg-gray-200 hover:text-red-700"
+              onClick={handleLogout}
+            >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 viewBox="0 0 24 24"

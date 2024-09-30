@@ -21,6 +21,7 @@ const Register = () => {
       headers: {
         "Content-Type": "application/json",
       },
+      credentials: "include",
     });
 
     const result = await response.json();
@@ -48,7 +49,12 @@ const Register = () => {
         <h2 className="text-2xl font-bold mb-6 text-center">Register</h2>
 
         <div className="mb-4">
-          <label className="block text-sm font-semibold mb-2" htmlFor="fullname">Full Name</label>
+          <label
+            className="block text-sm font-semibold mb-2"
+            htmlFor="fullname"
+          >
+            Full Name
+          </label>
           <input
             type="text"
             id="fullname"
@@ -61,7 +67,9 @@ const Register = () => {
         </div>
 
         <div className="mb-4">
-          <label className="block text-sm font-semibold mb-2" htmlFor="email">Email</label>
+          <label className="block text-sm font-semibold mb-2" htmlFor="email">
+            Email
+          </label>
           <input
             type="email"
             id="email"
@@ -74,7 +82,12 @@ const Register = () => {
         </div>
 
         <div className="mb-4">
-          <label className="block text-sm font-semibold mb-2" htmlFor="password">Password</label>
+          <label
+            className="block text-sm font-semibold mb-2"
+            htmlFor="password"
+          >
+            Password
+          </label>
           <input
             type="password"
             id="password"
@@ -87,7 +100,12 @@ const Register = () => {
         </div>
 
         <div className="mb-4">
-          <label className="block text-sm font-semibold mb-2" htmlFor="phoneNumber">Phone Number</label>
+          <label
+            className="block text-sm font-semibold mb-2"
+            htmlFor="phoneNumber"
+          >
+            Phone Number
+          </label>
           <input
             type="tel"
             id="phoneNumber"
@@ -104,7 +122,9 @@ const Register = () => {
           <label className="block text-sm font-semibold mb-2">Role</label>
           <div className="flex items-center justify-between">
             <span
-              className={`cursor-pointer ${role === "recruiter" ? "font-bold" : "text-gray-600"}`}
+              className={`cursor-pointer ${
+                role === "recruiter" ? "font-bold" : "text-gray-600"
+              }`}
               onClick={() => setRole("recruiter")}
             >
               Recruiter
@@ -114,15 +134,21 @@ const Register = () => {
                 type="checkbox"
                 className="sr-only"
                 checked={role === "recruiter"}
-                onChange={() => setRole(role === "recruiter" ? "student" : "recruiter")}
+                onChange={() =>
+                  setRole(role === "recruiter" ? "student" : "recruiter")
+                }
               />
               <div className="w-12 h-6 bg-[#00A263] rounded-full shadow-inner"></div>
               <div
-                className={`absolute w-6 h-6 bg-white rounded-full shadow transform transition-transform duration-300 ease-in-out ${role === "student" ? "translate-x-6" : "translate-x-0"}`}
+                className={`absolute w-6 h-6 bg-white rounded-full shadow transform transition-transform duration-300 ease-in-out ${
+                  role === "student" ? "translate-x-6" : "translate-x-0"
+                }`}
               ></div>
             </label>
             <span
-              className={`cursor-pointer ${role === "student" ? "font-bold" : "text-gray-600"}`}
+              className={`cursor-pointer ${
+                role === "student" ? "font-bold" : "text-gray-600"
+              }`}
               onClick={() => setRole("student")}
             >
               Student
