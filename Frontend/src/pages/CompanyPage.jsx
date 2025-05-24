@@ -3,6 +3,7 @@ import React from "react";
 import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import axios from "axios";
+import { GET_ALL_COMPANIES } from "@/utils/constant";
 
 const CompanyPage = () => {
   const [companies, setCompanies] = useState([]);
@@ -15,7 +16,7 @@ const CompanyPage = () => {
   useEffect(() => {
     const fetchCompanies = async () => {
       try {
-        const res = await axios.get("http://localhost:8021/api/v1/company/get"); // Update the endpoint if needed
+        const res = await axios.get(GET_ALL_COMPANIES); // Update the endpoint if needed
         //console.log(res.data.companies);
         setCompanies(res.data.companies); // Expecting res.data to be an array of companies
       } catch (err) {

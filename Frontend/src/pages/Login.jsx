@@ -1,37 +1,85 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom"; // Import useNavigate
+import Cookies from "js-cookie";
 
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [role, setRole] = useState("student"); // Default to "user"
   const [error, setError] = useState("");
+  const [companyname, setCompanyName] = useState("");
+  const [companypassword, setCompanyPassword] = useState("");
 
   const navigate = useNavigate(); // Initialize useNavigate hook
 
   const handleLogin = async (e) => {
     e.preventDefault();
+    setError(""); // Clear any previous errors
 
-    const addUser = { email: email, password: password, role: role };
-    console.log(addUser);
-    const response = await fetch("http://localhost:8021/api/v1/user/login", {
-      method: "POST",
-      body: JSON.stringify(addUser),
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
-    const result = await response.json();
-    if (!response.ok) {
-      setError(result.error);
-      console.log(result.error);
-    } else {
-      // Clear input fields and error message
-      setRole("student");
-      setError("");
-      setPassword("");
-      setEmail("");
-      navigate("/"); // Navigate to home after successful login
+    try {
+      let loginData = {};
+      let apiUrl = "";
+
+      if (role === "recruiter") {
+        if (!companyname || !companypassword) {
+          setError("Company name and password are required for recruiters");
+          return;
+        }
+        loginData = {
+          email,
+          password,
+          companyname,
+          companypassword,
+          role,
+        };
+        apiUrl = "http://localhost:8021/api/v1/user/loginRecruiters";
+      } else {
+        loginData = {
+          email,
+          password,
+          role,
+        };
+        apiUrl = "http://localhost:8021/api/v1/user/loginStudents";
+      }
+
+      const response = await fetch(apiUrl, {
+        method: "POST",
+        body: JSON.stringify(loginData),
+        headers: {
+          "Content-Type": "application/json",
+        },
+        credentials: "include",
+      });
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        setError(result.error || "Login failed. Please try again.");
+        console.error(result.error);
+      } else {
+        // Clear input fields and error message
+
+        setError("");
+        setPassword("");
+        setEmail("");
+        setCompanyName("");
+        setCompanyPassword("");
+
+        if (role == "recruiter") {
+          console.log(result.user);
+          navigate(`/company/${result.user.companyId}`);
+          console.log("gone");
+          setRole("recruiter");
+        } else {
+          setRole("student");
+          navigate("/");
+        }
+
+        // Navigate to home after successful login
+      }
+    } catch (error) {
+      setError("An error occurred during login. Please try again.");
+      console.error("Login error:", error);
     }
   };
 
@@ -75,6 +123,46 @@ const Login = () => {
             placeholder="Enter your password"
           />
         </div>
+
+        {role === "recruiter" && (
+          <>
+            <div className="mb-4">
+              <label
+                className="block text-sm font-semibold mb-2"
+                htmlFor="companyname"
+              >
+                Company Name
+              </label>
+              <input
+                type="text"
+                id="companyname"
+                value={companyname}
+                onChange={(e) => setCompanyName(e.target.value)}
+                required
+                className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:border-[#00A263]"
+                placeholder="Enter company name"
+              />
+            </div>
+
+            <div className="mb-4">
+              <label
+                className="block text-sm font-semibold mb-2"
+                htmlFor="companypassword"
+              >
+                Company Password
+              </label>
+              <input
+                type="password"
+                id="companypassword"
+                value={companypassword}
+                onChange={(e) => setCompanyPassword(e.target.value)}
+                required
+                className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:border-[#00A263]"
+                placeholder="Enter company password"
+              />
+            </div>
+          </>
+        )}
 
         <div className="mb-6">
           <label className="block text-sm font-semibold mb-2">Role</label>
@@ -129,7 +217,7 @@ const Login = () => {
 
         {/* Register Now Button */}
         <div className="mt-4 text-center">
-          <p className="text-sm">Don't have an account?</p>
+          <p className="text-sm">Don&apos;t have an account?</p>
           <Link to="/register">
             <button className="text-[#00A263] font-bold">Register Now</button>
           </Link>

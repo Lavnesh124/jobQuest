@@ -13,6 +13,7 @@ const jobSchema = new mongoose.Schema(
     },
     requirements: {
       type: [String],
+      required: true,
     },
     salary: {
       type: Number,
@@ -34,17 +35,17 @@ const jobSchema = new mongoose.Schema(
       type: Number,
       required: true,
     },
-    company: {
+    companyId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Company",
       required: true,
     },
-    created_by: {
+    recruiterId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
-     //required: true,
+      required: true,
     },
-    application: [
+    applications: [
       {
         type: mongoose.Schema.Types.ObjectId,
         ref: "Application",
@@ -54,6 +55,6 @@ const jobSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-const job = mongoose.model("Job", jobSchema);
+const Job = mongoose.model("Job", jobSchema);
 
-export default job;
+export default Job;

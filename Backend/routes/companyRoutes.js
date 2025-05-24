@@ -5,11 +5,11 @@ import { check, getCompany, getCompanyById, registerCompany, updateCompany } fro
 const router = express.Router();
 
 
-router.route("/").get(isAuthenticated, check);
+router.route("/").get( check);
 router.route("/register").post(registerCompany);
 router.route("/get").get(getCompany);
 router.route("/get/:id").get(getCompanyById);
-router.route("/update/:id").put(isAuthenticated, updateCompany);
+router.route("/update/:id").put( updateCompany);
 
 export default router;
 

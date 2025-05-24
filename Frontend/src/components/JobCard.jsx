@@ -1,15 +1,14 @@
-import React from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from "react-router-dom";
+import PropTypes from "prop-types";
 
 function JobCard({ job }) {
   const navigate = useNavigate();
 
   const handleApplyClick = () => {
-    navigate(`/jobApply/${job._id}`); // Assuming you want to navigate with job ID
+    navigate(`/jobApply/${job._id}`);
   };
 
   const handleSaveClick = () => {
-    // Add save functionality here (e.g., API call or state update)
     console.log("Saved job:", job._id);
   };
 
@@ -17,11 +16,13 @@ function JobCard({ job }) {
     <div className="max-w-sm rounded overflow-hidden shadow-lg p-4 relative ml-8 mr-8 bg-slate-100">
       <div className="pl-5">
         <h5 className="font-bold text-xl mb-2">{job.title}</h5>
-        <h6 className="text-gray-600 mb-4">{job.company}</h6>
+        <h6 className="text-gray-600 mb-4">{job.companyId?.companyname}</h6>
       </div>
       <div>
         <p className="text-gray-700 text-base">
-          {job.description.length > 100 ? job.description.substring(0, 100) + "..." : job.description}
+          {job.description.length > 100
+            ? job.description.substring(0, 100) + "..."
+            : job.description}
         </p>
         <div className="mt-4">
           <button
@@ -41,5 +42,16 @@ function JobCard({ job }) {
     </div>
   );
 }
+
+JobCard.propTypes = {
+  job: PropTypes.shape({
+    _id: PropTypes.string.isRequired,
+    title: PropTypes.string.isRequired,
+    description: PropTypes.string.isRequired,
+    companyId: PropTypes.shape({
+      companyname: PropTypes.string.isRequired,
+    }).isRequired,
+  }).isRequired,
+};
 
 export default JobCard;

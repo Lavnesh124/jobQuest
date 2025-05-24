@@ -1,4 +1,4 @@
-import mongoose from "mongoose";
+import mongoose from "mongoose"; 
 
 const userSchema = new mongoose.Schema({
     fullname: {
@@ -17,6 +17,16 @@ const userSchema = new mongoose.Schema({
         type: String,
         required: true,
     },
+    companyId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Company'
+    },
+    companyName: {
+        type: String,
+    },
+    companyPassword: {
+        type: String,
+    },
     role: {
         type: String,
         enum: ['student', 'recruiter','admin'],
@@ -28,7 +38,6 @@ const userSchema = new mongoose.Schema({
         skills: [{ type: String }],
         resume: { type: String },
         resumeOrigionalName: { type: String },
-        company: { type: mongoose.Schema.Types.ObjectId, ref: 'Company' },
         profilePhoto: {
             type: String,
             default: ""

@@ -1,7 +1,8 @@
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 
 const JobRegisterPage = () => {
+  const { id: companyId } = useParams();
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [requirements, setRequirements] = useState("");
@@ -10,27 +11,59 @@ const JobRegisterPage = () => {
   const [jobType, setJobType] = useState("");
   const [experience, setExperience] = useState("");
   const [position, setPosition] = useState("");
+  const [error, setError] = useState("");
 
   const navigate = useNavigate();
 
   const handleCreate = async (e) => {
     e.preventDefault();
+    setError("");
 
-    const jobData = {
-      title,
-      description,
-      requirements,
-      salary,
-      location,
-      jobType,
-      experience: parseInt(experience),
-      position: parseInt(position),
-    };
+    try {
+      const jobData = {
+        title,
+        description,
+        requirements,
+        salary: parseInt(salary),
+        location,
+        jobType,
+        experience: parseInt(experience),
+        position: parseInt(position),
+        companyId,
+      };
 
-    console.log(jobData); // replace with API POST call later
+      const response = await fetch("http://localhost:8021/api/v1/job/post", {
+        method: "POST",
+        body: JSON.stringify(jobData),
+        headers: {
+          "Content-Type": "application/json",
+        },
+        credentials: "include",
+      });
 
-    // Example: navigate after successful API call
-    navigate("/company");
+      const result = await response.json();
+
+      if (!response.ok) {
+        setError(result.error || "Failed to create job posting");
+        console.error(result.error);
+      } else {
+        // Clear form fields
+        setTitle("");
+        setDescription("");
+        setRequirements("");
+        setSalary("");
+        setLocation("");
+        setJobType("");
+        setExperience("");
+        setPosition("");
+
+        // Navigate back to company page after successful job posting
+        navigate(`/company/${companyId}`);
+      }
+    } catch (error) {
+      setError("An error occurred while creating the job posting");
+      console.error("Job posting error:", error);
+    }
   };
 
   return (
@@ -41,6 +74,8 @@ const JobRegisterPage = () => {
       >
         <h2 className="text-2xl font-bold mb-6 text-center">Post a Job</h2>
 
+        {error && <div className="text-red-500 text-sm mb-4">{error}</div>}
+
         <div className="mb-4">
           <label className="block text-sm font-semibold mb-2">Job Title</label>
           <input
@@ -48,7 +83,7 @@ const JobRegisterPage = () => {
             value={title}
             onChange={(e) => setTitle(e.target.value)}
             required
-            className="w-full px-3 py-2 border rounded"
+            className="w-full px-3 py-2 border rounded focus:outline-none focus:border-[#00A263]"
             placeholder="e.g. Backend Developer"
           />
         </div>
@@ -61,8 +96,9 @@ const JobRegisterPage = () => {
             value={description}
             onChange={(e) => setDescription(e.target.value)}
             required
-            className="w-full px-3 py-2 border rounded"
+            className="w-full px-3 py-2 border rounded focus:outline-none focus:border-[#00A263]"
             placeholder="Describe the role"
+            rows="4"
           />
         </div>
 
@@ -75,7 +111,7 @@ const JobRegisterPage = () => {
             value={requirements}
             onChange={(e) => setRequirements(e.target.value)}
             required
-            className="w-full px-3 py-2 border rounded"
+            className="w-full px-3 py-2 border rounded focus:outline-none focus:border-[#00A263]"
             placeholder="e.g. Node.js, MongoDB, Express.js"
           />
         </div>
@@ -89,7 +125,8 @@ const JobRegisterPage = () => {
             value={salary}
             onChange={(e) => setSalary(e.target.value)}
             required
-            className="w-full px-3 py-2 border rounded"
+            min="0"
+            className="w-full px-3 py-2 border rounded focus:outline-none focus:border-[#00A263]"
             placeholder="e.g. 15"
           />
         </div>
@@ -101,7 +138,7 @@ const JobRegisterPage = () => {
             value={location}
             onChange={(e) => setLocation(e.target.value)}
             required
-            className="w-full px-3 py-2 border rounded"
+            className="w-full px-3 py-2 border rounded focus:outline-none focus:border-[#00A263]"
             placeholder="e.g. Bangalore"
           />
         </div>
@@ -112,7 +149,7 @@ const JobRegisterPage = () => {
             value={jobType}
             onChange={(e) => setJobType(e.target.value)}
             required
-            className="w-full px-3 py-2 border rounded"
+            className="w-full px-3 py-2 border rounded focus:outline-none focus:border-[#00A263]"
           >
             <option value="">Select Type</option>
             <option value="Full time">Full time</option>
@@ -130,7 +167,8 @@ const JobRegisterPage = () => {
             value={experience}
             onChange={(e) => setExperience(e.target.value)}
             required
-            className="w-full px-3 py-2 border rounded"
+            min="0"
+            className="w-full px-3 py-2 border rounded focus:outline-none focus:border-[#00A263]"
             placeholder="e.g. 2"
           />
         </div>
@@ -144,14 +182,15 @@ const JobRegisterPage = () => {
             value={position}
             onChange={(e) => setPosition(e.target.value)}
             required
-            className="w-full px-3 py-2 border rounded"
+            min="1"
+            className="w-full px-3 py-2 border rounded focus:outline-none focus:border-[#00A263]"
             placeholder="e.g. 3"
           />
         </div>
 
         <button
           type="submit"
-          className="w-full px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700"
+          className="w-full px-4 py-2 bg-[#00A263] text-white rounded hover:bg-green-700 transition duration-200"
         >
           Create Job
         </button>

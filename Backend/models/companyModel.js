@@ -8,10 +8,14 @@ const companySchema = new mongoose.Schema({
         required: true,
         unique: true,
     },
+    companypassword: {
+        type: String,
+        required: true,
+    },
     description: {
         type: String,
     },
-    websites: {
+    website: {
         type: String,
     },
     location: {

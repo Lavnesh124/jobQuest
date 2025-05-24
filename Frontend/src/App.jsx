@@ -37,7 +37,7 @@ function App() {
           <Route path="/company/:id" element={<SingleCompanyPage />} />
           <Route path="/role-details" element={<JobOpeningPage />} />
           <Route path="/profile/update" element={<UpdateProfilePage />} />
-          <Route path="/jobs/register" element={<JobRegisterPage />} />
+          <Route path="/jobs/register/:id" element={<JobRegisterPage />} />
         </Routes>
         <Footer />
       </Router>
