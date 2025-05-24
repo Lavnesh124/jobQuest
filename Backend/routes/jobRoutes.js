@@ -16,4 +16,3 @@ router.route("/post").post(isAuthenticated, postJob);
 router.route("/recruiter/jobs").get(isAuthenticated, getRecruiterJobs);
 
 export default router;
-
