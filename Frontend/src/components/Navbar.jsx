@@ -52,8 +52,11 @@ const Navbar = () => {
             alt="Profile"
           />
         </button>
+        
         {isProfileOpen && (
-          <div className="absolute top-10 right-[-3.2rem] mt-2 w-40 bg-gray-100 text-black rounded-md shadow-2xl z-10 mx-auto">
+          <div className="fixed inset-0 bg-gray-100 bg-opacity-30 z-40"  onClick={()=>{setIsProfileOpen(false)}} >
+          <div className="absolute top-12 right-16  p-2 h-30  mt-2 w-50 bg-gray-100 text-black rounded-md shadow-2xl z-50 mx-auto">
+          <div className="absolute -top-2 right-4 w-0 h-0 border-l-8 border-r-8 border-b-8 border-l-transparent border-r-transparent border-b-white"></div>
             <NavLink
               to="/profile"
               className="flex items-center px-4 py-2 hover:bg-gray-200"
@@ -93,6 +96,7 @@ const Navbar = () => {
               </svg>
               Logout
             </button>
+          </div>
           </div>
         )}
       </div>

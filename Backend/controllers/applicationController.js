@@ -39,8 +39,6 @@ export const applyJob = async (req, res) => {
             message: "Job applied successfully",
             success: true,
         })
-
-
     } catch (error) {
         console.log(error);
     }
@@ -94,15 +92,12 @@ export const getApplicants = async (req, res) => {
                 message: "job not found ",
                 success: false,
             })
-
         }
 
         return res.status(201).json({
             job,
             success: true,
         })
-
-
     } catch (error) {
         console.log(error);
     }

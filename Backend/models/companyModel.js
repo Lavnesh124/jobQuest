@@ -3,7 +3,7 @@ import mongoose from "mongoose";
 
 
 const companySchema = new mongoose.Schema({
-    name: {
+    companyname: {
         type: String,
         required: true,
         unique: true,
@@ -19,11 +19,6 @@ const companySchema = new mongoose.Schema({
     },
     logo: {
         type: String,
-    },
-    userid: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'User',
-        required: true,
     }
 }, { timestamps: true });
 

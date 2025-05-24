@@ -5,14 +5,15 @@ import jwt from "jsonwebtoken";
 export const register = async (req, res) => {
     try {
         const { fullname, email, phoneNumber, password, role } = req.body;
-        if (!fullname || !email || !phoneNumber || !password || !role) {
+        if (!fullname || !email  || !password || !role) {
             return res.status(400).json({
                 message: "Something is missing",
                 success: false
             });
         };
         const user = await User.findOne({ email });
-        if (user) {  // Corrected condition to check if the user exists
+        if (user) {
+            // Corrected condition to check if the user exists
             return res.status(400).json({
                 message: "User already exists with this email",
                 success: false,
@@ -72,11 +73,9 @@ export const login = async (req, res) => {
                 success: false,
             });
         }
-
         const tokenData = {
             userId: user._id
         }
-
         const token = jwt.sign(tokenData, process.env.SECRET_KEY, { expiresIn: '1d' });
 
         user = {
