@@ -1,4 +1,4 @@
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { GET_JOB_DETAILS_BY_ID } from "@/utils/constant";
 import axios from "axios";
@@ -36,10 +36,17 @@ const PinIcon = (props) => (
     <circle cx="12" cy="9.5" r="2.2" />
   </svg>
 );
+const MessageIcon = (props) => (
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" {...props}>
+    <path d="M21 11.5a8.5 8.5 0 0 1-8.5 8.5c-1.35 0-2.62-.32-3.74-.9L3 20l1.02-4.6A8.5 8.5 0 1 1 21 11.5Z" />
+  </svg>
+);
 
 const JobApplyPage = () => {
   const { id } = useParams();
+  const navigate = useNavigate();
   const [applyStatus, setApplyStatus] = useState("Apply");
+  const [messageStatus, setMessageStatus] = useState("idle"); // idle | loading | error
 
   const {
     data: job,
@@ -66,6 +73,21 @@ const JobApplyPage = () => {
       console.log(error.response?.data || error);
     }
   };
+
+  const handleMessage = async () => {
+  setMessageStatus("loading");
+  try {
+    const res = await axios.post(
+      "http://localhost:8021/api/v1/chat/conversations",
+      { recipientId: job.companyId }, // matches your controller's req.body.recipientId
+      { withCredentials: true }
+    );
+    navigate(`/chat/${res.data.conversation._id}`);
+  } catch (err) {
+    console.log(err.response?.data || err);
+    setMessageStatus("error");
+  }
+};
 
   if (isLoading) {
     return (
@@ -145,6 +167,22 @@ const JobApplyPage = () => {
                 </p>
               </div>
             </div>
+
+            {/* Message recruiter */}
+            <button
+              type="button"
+              onClick={handleMessage}
+              disabled={messageStatus === "loading"}
+              className="mt-8 inline-flex items-center gap-2 text-sm font-medium text-[#1F6B4C] hover:text-[#18543B] transition-colors disabled:opacity-50"
+            >
+              <MessageIcon className="w-4 h-4" />
+              {messageStatus === "loading" ? "Opening chat…" : "Message recruiter"}
+            </button>
+            {messageStatus === "error" && (
+              <p className="text-xs text-[#B5482F] mt-2">
+                Couldn't start the conversation. Try again.
+              </p>
+            )}
           </div>
 
           {/* Perforated divider */}
