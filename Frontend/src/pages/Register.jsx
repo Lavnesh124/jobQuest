@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "@/context/authContext";
 import Cookies from "js-cookie";
 
 const Register = () => {
@@ -13,6 +14,7 @@ const Register = () => {
   const [companyname, setCompanyName] = useState("");
   const [companypassword, setCompanyPassword] = useState("");
   const navigate = useNavigate();
+  const { isAuthenticated, loading, setIsAuthenticated } = useAuth();
 
   const handleRegister = async (e) => {
     e.preventDefault();
@@ -67,6 +69,7 @@ const Register = () => {
         setCompanyName("");
         setCompanyPassword("");
         navigate("/"); // Navigate to home after successful registration
+        setIsAuthenticated(true);
       }
     } catch (error) {
       setError("An error occurred during registration");

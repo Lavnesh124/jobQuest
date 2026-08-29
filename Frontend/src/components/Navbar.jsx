@@ -20,7 +20,8 @@ const Navbar = () => {
       const result = await response.json();
       console.log(result.message);
       setIsAuthenticated(false);
-      navigate("/login");
+      // TODO: Re-enable when auth is back — navigate("/login");
+      navigate("/");
     } catch (error) {
       console.error("Error during Logout", error);
     }
@@ -74,54 +75,59 @@ const Navbar = () => {
             alt="Profile"
           />
         </button>
-        
+
         {isProfileOpen && (
-          <div className="fixed inset-0 bg-gray-100 bg-opacity-30 z-40"  onClick={()=>{setIsProfileOpen(false)}} >
-          <div className="absolute top-12 right-16  p-2 h-30  mt-2 w-50 bg-gray-100 text-black rounded-md shadow-2xl z-50 mx-auto">
-          <div className="absolute -top-2 right-4 w-0 h-0 border-l-8 border-r-8 border-b-8 border-l-transparent border-r-transparent border-b-white"></div>
-            <NavLink
-              to="/profile"
-              className="flex items-center px-4 py-2 hover:bg-gray-200"
-            >
-              <svg
-                className="w-5 h-5 mr-2"
-                fill="currentColor"
-                viewBox="0 0 24 24"
-                xmlns="http://www.w3.org/2000/svg"
+          <div
+            className="fixed inset-0 bg-gray-100 bg-opacity-30 z-40"
+            onClick={() => {
+              setIsProfileOpen(false);
+            }}
+          >
+            <div className="absolute top-12 right-16  p-2 h-30  mt-2 w-50 bg-gray-100 text-black rounded-md shadow-2xl z-50 mx-auto">
+              <div className="absolute -top-2 right-4 w-0 h-0 border-l-8 border-r-8 border-b-8 border-l-transparent border-r-transparent border-b-white"></div>
+              <NavLink
+                to="/profile"
+                className="flex items-center px-4 py-2 hover:bg-gray-200"
               >
-                <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-3.31 0-10 1.67-10 5v2h20v-2c0-3.33-6.69-5-10-5z" />
-              </svg>
-              View Profile
-            </NavLink>
-            <button
-              className="flex items-center w-full text-left px-4 py-2 hover:bg-gray-200 hover:text-red-700"
-              onClick={handleLogout}
-            >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 24 24"
-                width="24"
-                height="24"
-                color="#000000"
-                fill="none"
+                <svg
+                  className="w-5 h-5 mr-2"
+                  fill="currentColor"
+                  viewBox="0 0 24 24"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-3.31 0-10 1.67-10 5v2h20v-2c0-3.33-6.69-5-10-5z" />
+                </svg>
+                View Profile
+              </NavLink>
+              <button
+                className="flex items-center w-full text-left px-4 py-2 hover:bg-gray-200 hover:text-red-700"
+                onClick={handleLogout}
               >
-                <path
-                  d="M11 3L10.3374 3.23384C7.75867 4.144 6.46928 4.59908 5.73464 5.63742C5 6.67576 5 8.0431 5 10.7778V13.2222C5 15.9569 5 17.3242 5.73464 18.3626C6.46928 19.4009 7.75867 19.856 10.3374 20.7662L11 21"
-                  stroke="currentColor"
-                  strokeWidth="1.5"
-                  strokeLinecap="round"
-                />
-                <path
-                  d="M21 12L11 12M21 12C21 11.2998 19.0057 9.99153 18.5 9.5M21 12C21 12.7002 19.0057 14.0085 18.5 14.5"
-                  stroke="currentColor"
-                  strokeWidth="1.5"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-              </svg>
-              Logout
-            </button>
-          </div>
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 24 24"
+                  width="24"
+                  height="24"
+                  color="#000000"
+                  fill="none"
+                >
+                  <path
+                    d="M11 3L10.3374 3.23384C7.75867 4.144 6.46928 4.59908 5.73464 5.63742C5 6.67576 5 8.0431 5 10.7778V13.2222C5 15.9569 5 17.3242 5.73464 18.3626C6.46928 19.4009 7.75867 19.856 10.3374 20.7662L11 21"
+                    stroke="currentColor"
+                    strokeWidth="1.5"
+                    strokeLinecap="round"
+                  />
+                  <path
+                    d="M21 12L11 12M21 12C21 11.2998 19.0057 9.99153 18.5 9.5M21 12C21 12.7002 19.0057 14.0085 18.5 14.5"
+                    stroke="currentColor"
+                    strokeWidth="1.5"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                </svg>
+                Logout
+              </button>
+            </div>
           </div>
         )}
       </div>

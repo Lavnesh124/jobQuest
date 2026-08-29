@@ -27,8 +27,14 @@ export const applyJob = async (req, res) => {
         }
         const job = await Job.findById(jobId);
         if (!job) {
+            return res.status(404).json({
+                message: "Job not found",
+                success: false,
+            })
+        }
+        if (job.status && job.status !== "apply") {
             return res.status(400).json({
-                message: "You have applied for job",
+                message: "This job is not accepting applications",
                 success: false,
             })
         }
@@ -113,17 +119,11 @@ export const getApplicants = async (req, res) => {
 
 
 
-export const updateStatus = async (req, res) => {
+export const acceptApplication = async (req, res) => {
     try {
-        const { status } = req.body;
         const applicationId = req.params.id;
-        if (!status) {
-            return res.status(404).json({
-                message: "status is required",
-                success: false,
-            })
-        };
         const application = await Application.findOne({ _id: applicationId });
+        
         if (!application) {
             return res.status(404).json({
                 message: "Application not found",
@@ -131,17 +131,49 @@ export const updateStatus = async (req, res) => {
             })
         }
 
-        application.status = status.toLowerCase();
+        application.status = 'accepted';
         await application.save();
 
         return res.status(200).json({
-            message: "Status updated successfully",
+            message: "Application accepted successfully",
             success: true,
         })
 
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json({
+            message: "Server error",
+            success: false,
+        });
+    }
+}
+
+export const rejectApplicant = async (req, res) => {
+    try {
+        const applicationId = req.params.id;
+        const application = await Application.findOne({ _id: applicationId });
+        
+        if (!application) {
+            return res.status(404).json({
+                message: "Application not found",
+                success: false,
+            })
+        }
+
+        application.status = 'rejected';
+        await application.save();
+
+        return res.status(200).json({
+            message: "Application rejected successfully",
+            success: true,
+        })
 
     } catch (error) {
         console.log(error);
+        return res.status(500).json({
+            message: "Server error",
+            success: false,
+        });
     }
 }
 

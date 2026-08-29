@@ -5,7 +5,7 @@ const JobRoleCard = ({ job }) => {
   const navigate = useNavigate();
 
   const handleClick = () => {
-    navigate(`/role-details/${job._id}`);
+    navigate(`/company/role-details/${job._id}`);
   };
 
   return (

@@ -1,47 +1,61 @@
-import React, { useState } from "react";
-import { Link, useNavigate } from "react-router-dom"; // Import useNavigate
-import Cookies from "js-cookie";
+import { useReducer, useMemo } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { useAuth } from "@/context/authContext";
+
+const initialState = {
+  email: "",
+  password: "",
+  companyName: "",
+  companyPassword: "",
+  error: "",
+};
+
+function reducer(state, action) {
+  return { ...state, [action.name]: action.value };
+}
 
 const Login = () => {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [role, setRole] = useState("student"); // Default to "user"
-  const [error, setError] = useState("");
-  const [companyname, setCompanyName] = useState("");
-  const [companypassword, setCompanyPassword] = useState("");
+  const [state, dispatch] = useReducer(reducer, initialState);
+  const { email, password, companyName, companyPassword, error } = state;
 
-  const navigate = useNavigate(); // Initialize useNavigate hook
+  const { setIsAuthenticated, setRole, role } = useAuth();
+  const navigate = useNavigate();
+
+  const isRecruiter = role === "recruiter";
+
+  const apiUrl = useMemo(() => {
+    return isRecruiter
+      ? "http://localhost:8021/api/v1/user/loginRecruiters"
+      : "http://localhost:8021/api/v1/user/loginStudents";
+  }, [isRecruiter]);
+
+  const handleChange = (e) => {
+    dispatch({ name: e.target.name, value: e.target.value });
+  };
 
   const handleLogin = async (e) => {
     e.preventDefault();
-    setError(""); // Clear any previous errors
+    dispatch({ name: "error", value: "" });
+
+    if (isRecruiter && (!companyName || !companyPassword)) {
+      dispatch({
+        name: "error",
+        value: "Company name and password are required for recruiters",
+      });
+      return;
+    }
+
+    const loginData = isRecruiter
+      ? {
+          email,
+          password,
+          companyname: companyName,
+          companypassword: companyPassword,
+          role,
+        }
+      : { email, password, role };
 
     try {
-      let loginData = {};
-      let apiUrl = "";
-
-      if (role === "recruiter") {
-        if (!companyname || !companypassword) {
-          setError("Company name and password are required for recruiters");
-          return;
-        }
-        loginData = {
-          email,
-          password,
-          companyname,
-          companypassword,
-          role,
-        };
-        apiUrl = "http://localhost:8021/api/v1/user/loginRecruiters";
-      } else {
-        loginData = {
-          email,
-          password,
-          role,
-        };
-        apiUrl = "http://localhost:8021/api/v1/user/loginStudents";
-      }
-
       const response = await fetch(apiUrl, {
         method: "POST",
         body: JSON.stringify(loginData),
@@ -54,32 +68,26 @@ const Login = () => {
       const result = await response.json();
 
       if (!response.ok) {
-        setError(result.error || "Login failed. Please try again.");
-        console.error(result.error);
+        dispatch({
+          name: "error",
+          value: result.error || "Login failed. Please try again.",
+        });
       } else {
-        // Clear input fields and error message
+        setIsAuthenticated(true);
+        dispatch({ name: "error", value: "" });
 
-        setError("");
-        setPassword("");
-        setEmail("");
-        setCompanyName("");
-        setCompanyPassword("");
+        Object.keys(initialState).forEach((key) => {
+          dispatch({ name: key, value: "" });
+        });
 
-        if (role == "recruiter") {
-          console.log(result.user);
-          navigate(`/company/${result.user.companyId}`);
-          console.log("gone");
-          setRole("recruiter");
-        } else {
-          setRole("student");
-          navigate("/");
-        }
-
-        // Navigate to home after successful login
+        navigate(isRecruiter ? `/company/${result.user.companyId}` : "/");
       }
-    } catch (error) {
-      setError("An error occurred during login. Please try again.");
-      console.error("Login error:", error);
+    } catch (err) {
+      dispatch({
+        name: "error",
+        value: "An error occurred during login. Please try again.",
+      });
+      console.error("Login error:", err);
     }
   };
 
@@ -91,122 +99,42 @@ const Login = () => {
       >
         <h2 className="text-2xl font-bold mb-6 text-center">Login</h2>
 
-        <div className="mb-4">
-          <label className="block text-sm font-semibold mb-2" htmlFor="email">
-            Email
-          </label>
-          <input
-            type="email"
-            id="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-            className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:border-[#00A263]"
-            placeholder="Enter your email"
-          />
-        </div>
+        <InputField
+          label="Email"
+          type="email"
+          name="email"
+          value={email}
+          onChange={handleChange}
+        />
+        <InputField
+          label="Password"
+          type="password"
+          name="password"
+          value={password}
+          onChange={handleChange}
+        />
 
-        <div className="mb-4">
-          <label
-            className="block text-sm font-semibold mb-2"
-            htmlFor="password"
-          >
-            Password
-          </label>
-          <input
-            type="password"
-            id="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-            className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:border-[#00A263]"
-            placeholder="Enter your password"
-          />
-        </div>
-
-        {role === "recruiter" && (
+        {isRecruiter && (
           <>
-            <div className="mb-4">
-              <label
-                className="block text-sm font-semibold mb-2"
-                htmlFor="companyname"
-              >
-                Company Name
-              </label>
-              <input
-                type="text"
-                id="companyname"
-                value={companyname}
-                onChange={(e) => setCompanyName(e.target.value)}
-                required
-                className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:border-[#00A263]"
-                placeholder="Enter company name"
-              />
-            </div>
-
-            <div className="mb-4">
-              <label
-                className="block text-sm font-semibold mb-2"
-                htmlFor="companypassword"
-              >
-                Company Password
-              </label>
-              <input
-                type="password"
-                id="companypassword"
-                value={companypassword}
-                onChange={(e) => setCompanyPassword(e.target.value)}
-                required
-                className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:border-[#00A263]"
-                placeholder="Enter company password"
-              />
-            </div>
+            <InputField
+              label="Company Name"
+              name="companyName"
+              value={companyName}
+              onChange={handleChange}
+            />
+            <InputField
+              label="Company Password"
+              type="password"
+              name="companyPassword"
+              value={companyPassword}
+              onChange={handleChange}
+            />
           </>
         )}
 
-        <div className="mb-6">
-          <label className="block text-sm font-semibold mb-2">Role</label>
-          <div className="flex items-center justify-between">
-            <span
-              className={`cursor-pointer ${
-                role === "recruiter" ? "font-bold" : "text-gray-600"
-              }`}
-              onClick={() => setRole("recruiter")}
-            >
-              Recruiter
-            </span>
-            <label className="relative inline-flex items-center cursor-pointer">
-              <input
-                type="checkbox"
-                className="sr-only"
-                checked={role === "recruiter"}
-                onChange={() =>
-                  setRole(role === "recruiter" ? "student" : "recruiter")
-                }
-              />
-              <div className="w-12 h-6 bg-[#00A263] rounded-full shadow-inner"></div>
-              <div
-                className={`absolute w-6 h-6 bg-white rounded-full shadow transform transition-transform duration-300 ease-in-out ${
-                  role === "student" ? "translate-x-6" : "translate-x-0"
-                }`}
-              ></div>
-            </label>
-            <span
-              className={`cursor-pointer ${
-                role === "student" ? "font-bold" : "text-gray-600"
-              }`}
-              onClick={() => setRole("student")}
-            >
-              Student
-            </span>
-          </div>
-        </div>
+        <RoleToggle role={role} setRole={setRole} />
 
-        {error && (
-          <div className="text-red-500 text-sm mb-4">
-            {error} {/* Display error message */}
-          </div>
-        )}
+        {error && <p className="text-red-500 text-sm mb-4">{error}</p>}
 
         <button
           type="submit"
@@ -215,16 +143,73 @@ const Login = () => {
           Login
         </button>
 
-        {/* Register Now Button */}
         <div className="mt-4 text-center">
           <p className="text-sm">Don&apos;t have an account?</p>
-          <Link to="/register">
-            <button className="text-[#00A263] font-bold">Register Now</button>
+          <Link to="/register" className="text-[#00A263] font-bold">
+            Register Now
           </Link>
         </div>
       </form>
     </div>
   );
 };
+
+const InputField = ({ label, type = "text", name, value, onChange }) => (
+  <div className="mb-4">
+    <label className="block text-sm font-semibold mb-2" htmlFor={name}>
+      {label}
+    </label>
+    <input
+      id={name}
+      name={name}
+      type={type}
+      value={value}
+      onChange={onChange}
+      required
+      className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:border-[#00A263]"
+      placeholder={`Enter your ${label.toLowerCase()}`}
+    />
+  </div>
+);
+
+const RoleToggle = ({ role, setRole }) => (
+  <div className="mb-6">
+    <label className="block text-sm font-semibold mb-2">Role</label>
+    <div className="flex items-center justify-between">
+      <span
+        className={`cursor-pointer ${
+          role === "recruiter" ? "font-bold" : "text-gray-600"
+        }`}
+        onClick={() => setRole("recruiter")}
+      >
+        Recruiter
+      </span>
+      <label className="relative inline-flex items-center cursor-pointer">
+        <input
+          type="checkbox"
+          className="sr-only"
+          checked={role === "recruiter"}
+          onChange={() =>
+            setRole(role === "recruiter" ? "student" : "recruiter")
+          }
+        />
+        <div className="w-12 h-6 bg-[#00A263] rounded-full shadow-inner"></div>
+        <div
+          className={`absolute w-6 h-6 bg-white rounded-full shadow transform transition-transform duration-300 ease-in-out ${
+            role === "student" ? "translate-x-6" : "translate-x-0"
+          }`}
+        />
+      </label>
+      <span
+        className={`cursor-pointer ${
+          role === "student" ? "font-bold" : "text-gray-600"
+        }`}
+        onClick={() => setRole("student")}
+      >
+        Student
+      </span>
+    </div>
+  </div>
+);
 
 export default Login;

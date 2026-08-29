@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 
 const JobRegisterPage = () => {
@@ -19,16 +19,41 @@ const JobRegisterPage = () => {
     e.preventDefault();
     setError("");
 
+    if (!companyId?.trim()) {
+      setError(
+        "Missing company in URL. Open this page from a company (path /jobs/register/:companyId)."
+      );
+      return;
+    }
+
+    const salaryNum = Number(salary);
+    const experienceNum = Number(experience);
+    const positionNum = Number(position);
+
+    if (!Number.isFinite(salaryNum) || salaryNum <= 0) {
+      setError("Salary must be a number greater than 0 (LPA).");
+      return;
+    }
+    if (!Number.isFinite(experienceNum) || experienceNum < 0) {
+      setError("Experience must be a number (years), 0 or more.");
+      return;
+    }
+    if (!Number.isFinite(positionNum) || positionNum < 1) {
+      setError("Open positions must be at least 1.");
+      return;
+    }
+
     try {
+      // Body matches POST /api/v1/job/post — recruiterId comes from auth cookie (req.id), not sent here.
       const jobData = {
-        title,
-        description,
-        requirements,
-        salary: parseInt(salary),
-        location,
+        title: title.trim(),
+        description: description.trim(),
+        requirements: requirements.trim(),
+        salary: salaryNum,
+        location: location.trim(),
         jobType,
-        experience: parseInt(experience),
-        position: parseInt(position),
+        experience: experienceNum,
+        position: positionNum,
         companyId,
       };
 
@@ -44,8 +69,8 @@ const JobRegisterPage = () => {
       const result = await response.json();
 
       if (!response.ok) {
-        setError(result.error || "Failed to create job posting");
-        console.error(result.error);
+        setError(result.message || result.error || "Failed to create job posting");
+        console.error(result.message || result.error);
       } else {
         // Clear form fields
         setTitle("");
@@ -125,7 +150,8 @@ const JobRegisterPage = () => {
             value={salary}
             onChange={(e) => setSalary(e.target.value)}
             required
-            min="0"
+            min="1"
+            step="any"
             className="w-full px-3 py-2 border rounded focus:outline-none focus:border-[#00A263]"
             placeholder="e.g. 15"
           />

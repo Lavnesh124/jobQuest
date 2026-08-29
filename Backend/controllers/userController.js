@@ -257,6 +257,44 @@ export const loginRecruiter = async (req, res) => {
     }
 }
 
+export const getProfile = async (req, res) => {
+    try {
+        const userId = req.id;
+        const user = await User.findById(userId).select("-password");
+        if (!user) {
+            return res.status(404).json({
+                message: "User not found",
+                success: false,
+            });
+        }
+
+        const safeUser = {
+            _id: user._id,
+            fullname: user.fullname,
+            email: user.email,
+            phoneNumber: user.phoneNumber,
+            role: user.role,
+            profile: user.profile,
+        };
+
+        if (user.role === "recruiter") {
+            safeUser.companyname = user.companyName || user.companyname;
+            safeUser.companyId = user.companyId;
+        }
+
+        return res.status(200).json({
+            user: safeUser,
+            success: true,
+        });
+    } catch (err) {
+        console.log(err);
+        return res.status(500).json({
+            message: "Server error",
+            success: false,
+        });
+    }
+};
+
 export const logout = async (req, res) => {
     try {
         return res.status(200).cookie("token", "", { maxAge: 0 }).json({
@@ -289,10 +327,13 @@ export const updateProfile = async (req, res) => {
             });
         }
 
+        if (!user.profile) user.profile = {};
         if (fullname) user.fullname = fullname;
         if (email) user.email = email;
-        if (phoneNumber) user.phoneNumber = phoneNumber;
-        if (bio) user.bio = bio;
+        if (phoneNumber !== undefined && phoneNumber !== null && phoneNumber !== "") {
+            user.phoneNumber = phoneNumber;
+        }
+        if (bio !== undefined && bio !== null) user.profile.bio = bio;
         if (skillsArray) user.profile.skills = skillsArray;
 
         await user.save();

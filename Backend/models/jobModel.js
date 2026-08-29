@@ -51,6 +51,11 @@ const jobSchema = new mongoose.Schema(
         ref: "Application",
       },
     ],
+    status: {
+      type: String,
+      enum: ["NoAction", "apply", "save", "reject"],
+      default: "NoAction",
+    },
   },
   { timestamps: true }
 );
