@@ -6,6 +6,7 @@ import toast from "react-hot-toast";
 const JobOpeningPage = () => {
   console.log("Component rendering");
   const [applications, setApplications] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
   const { id } = useParams();
   const navigate = useNavigate();
 
@@ -16,6 +17,7 @@ const JobOpeningPage = () => {
 
     const fetchApplications = async () => {
       console.log("Starting fetch request");
+      setIsLoading(true);
       try {
         const url = `http://localhost:8021/api/v1/application/job/${id}`;
         console.log("Fetching from URL:", url);
@@ -82,6 +84,8 @@ const JobOpeningPage = () => {
       } catch (error) {
         console.error("Fetch Error:", error);
         toast.error("An error occurred while fetching applications");
+      } finally {
+        setIsLoading(false);
       }
     };
 
@@ -90,30 +94,42 @@ const JobOpeningPage = () => {
       fetchApplications();
     } else {
       console.log("No job ID provided - fetch not called");
+      setIsLoading(false);
     }
   }, [id, navigate]);
 
   return (
-    <div className="container mx-auto py-8">
-      <div className="mb-8">
-        <h1 className="text-2xl font-bold text-gray-800">Job Applications</h1>
-        <p className="text-gray-600">
-          View and manage applications for this job posting
-        </p>
-      </div>
+    <div className="min-h-screen bg-[#FAF8F3] px-6 py-12">
+      <div className="max-w-4xl mx-auto">
+        <div className="mb-8">
+          <h1 className="text-3xl font-semibold text-[#14201B]">Job applications</h1>
+          <p className="text-[#14201B]/50 text-sm mt-1">
+            View and manage applications for this job posting.
+          </p>
+        </div>
 
-      {applications.length > 0 ? (
-        <div className="space-y-4">
-          {applications.map((application) => (
-            <UserAppliedjob key={application._id} application={application} />
-          ))}
-        </div>
-      ) : (
-        <div className="text-center bg-white rounded-lg shadow-md p-8">
-          <p className="text-gray-600 text-lg">No applications found</p>
-          <p className="text-sm text-gray-500 mt-2">Job ID: {id}</p>
-        </div>
-      )}
+        {isLoading ? (
+          <div className="space-y-4">
+            {Array.from({ length: 3 }).map((_, i) => (
+              <div key={i} className="h-24 bg-white border border-[#1B1F1D]/8 rounded-2xl animate-pulse" />
+            ))}
+          </div>
+        ) : applications.length > 0 ? (
+          <div className="space-y-4">
+            {applications.map((application) => (
+              <UserAppliedjob key={application._id} application={application} />
+            ))}
+          </div>
+        ) : (
+          <div className="text-center bg-white border border-dashed border-[#1B1F1D]/15 rounded-2xl px-8 py-14">
+            <p className="text-[#14201B] text-lg font-medium">No applications yet</p>
+            <p className="text-sm text-[#14201B]/40 mt-2">
+              Applications for this posting will show up here.
+            </p>
+            <p className="text-xs text-[#14201B]/30 mt-4 font-mono">Job ID: {id}</p>
+          </div>
+        )}
+      </div>
     </div>
   );
 };
