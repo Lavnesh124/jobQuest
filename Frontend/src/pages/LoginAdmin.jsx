@@ -1,11 +1,13 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom"; // Import useNavigate
+import { useAuth } from "@/context/authContext";
 
 const LoginAdmin = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [role, setRole] = useState("admin"); // Default to "user"
   const [error, setError] = useState("");
+  const { isAuthenticated, loading, setIsAuthenticated } = useAuth();
 
   const navigate = useNavigate(); // Initialize useNavigate hook
 
@@ -27,7 +29,8 @@ const LoginAdmin = () => {
       console.log(result.error);
     } else {
       // Clear input fields and error message
-      setRole("student");
+      setIsAuthenticated(true);
+      setRole("admin");
       setError("");
       setPassword("");
       setEmail("");
